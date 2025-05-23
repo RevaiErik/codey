@@ -1,0 +1,28 @@
+Megszamlalas
+var F = list.Where(x => x.vmi != null).Count();
+
+--------------------------------------------------------------------------
+
+Atlag
+var F = list.Where(x => x.vmi).Average(x => x.Eredmeny);
+
+--------------------------------------------------------------------------
+
+Dictionary
+var F = list.GroupBy(x => x.vmi).ToDictionary(x => x.Key, x => x.Count());
+
+--------------------------------------------------------------------------
+
+Min keres
+var F = list.OrderByDescending(x => x.vmi).First();
+
+--------------------------------------------------------------------------
+
+Max keres
+var F = list.OrderByAscending(x => x.vmi).First();
+
+--------------------------------------------------------------------------
+
+Keres
+Max keres
+var F = list.Where(x => x.vmi.Equals("***"));

@@ -1,0 +1,47 @@
+public partial class MainWindow : Window
+    {
+        List<Classnév> listnév = [];
+        public MainWindow()
+        {
+            InitializeComponent();
+            using (StreamReader be = new(path: @"..\..\..\src\txtnév.txt", encoding: System.Text.Encoding.UTF8))
+            {
+                _ = be.ReadLine();
+                while (!be.EndOfStream)
+                {
+                    listnév.Add(new Classnév(be.ReadLine()));
+                }
+            }
+            dataGrid.ItemsSource = listnév;
+
+            
+
+        }
+
+
+private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            if (selectedValue == null)
+            {
+                MessageBox.Show("Nincs kiválasztva adat!");
+                return;
+            }
+
+            if (MessageBox.Show($"Valóban javaslatot tesz a(z) {selectedValue.Ev}. évi paralimpia éremszámára?", "Megerősítés", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+            {
+                using (StreamWriter sw = new(path: @"..\..\..\src\kimenőtxt.txt", append: true, encoding: System.Text.Encoding.UTF8))
+                {
+                    sw.WriteLine($"{DateTime.Now.ToString("yyyy. MM. dd. HH:mm.ss.")} Id:{selectedValue.Id} Érmek: {arany_txtbox.Text} {ezust_txtbox.Text} {bronz_txtbox.Text}");
+                }
+            }
+        }
+
+
+
+private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            foreach (Classnév item in listnév)
+            {
+                Listbox.Items.Add(item.ToString());
+            }
+        }

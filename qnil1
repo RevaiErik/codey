@@ -1,0 +1,127 @@
+
+
+### 🔢 1. **Elemek megszámlálása (Count)**
+
+Megszámolja, hogy hány elem felel meg egy adott feltételnek.
+
+```csharp
+var darab = list.Where(x => x.vmi != null).Count();
+// Rövidebben:
+var darab = list.Count(x => x.vmi != null);
+```
+
+---
+
+### 📊 2. **Átlag számítása (Average)**
+
+Kiszámolja a megadott tulajdonság (pl. `Eredmeny`) átlagát, csak azokra, amelyek megfelelnek a feltételnek.
+
+```csharp
+var atlag = list.Where(x => x.vmi).Average(x => x.Eredmeny);
+```
+
+---
+
+### 🗂️ 3. **Csoportosítás és Dictionary készítés (GroupBy + ToDictionary)**
+
+Elemeket kulcs szerint csoportosít, és a csoportokat szótárba rendezve visszaadja.
+
+```csharp
+var dict = list
+    .GroupBy(x => x.vmi)
+    .ToDictionary(g => g.Key, g => g.Count());
+```
+
+Ez például megszámolja, hogy az egyes `vmi` értékek hányszor fordulnak elő.
+
+---
+
+### 🔽 4. **Minimum érték keresése (OrderBy → First)**
+
+Megkeresi azt az elemet, amelynél a `vmi` érték a legkisebb.
+
+```csharp
+var minElem = list.OrderBy(x => x.vmi).First();
+```
+
+Alternatív megoldás:
+
+```csharp
+var minErtek = list.Min(x => x.vmi);
+var minElem = list.First(x => x.vmi == minErtek);
+```
+
+---
+
+### 🔼 5. **Maximum érték keresése (OrderByDescending → First)**
+
+Megkeresi azt az elemet, amelynél a `vmi` érték a legnagyobb.
+
+```csharp
+var maxElem = list.OrderByDescending(x => x.vmi).First();
+```
+
+Alternatív megoldás:
+
+```csharp
+var maxErtek = list.Max(x => x.vmi);
+var maxElem = list.First(x => x.vmi == maxErtek);
+```
+
+---
+
+### 🔍 6. **Keresés adott értékre (Where, FirstOrDefault)**
+
+Megkeresi az első olyan elemet, amely egy adott értéket tartalmaz.
+
+```csharp
+var talalat = list.FirstOrDefault(x => x.vmi == "***");
+```
+
+Ha biztosak vagyunk abban, hogy létezik ilyen elem, akkor `First()` is használható:
+
+```csharp
+var talalat = list.First(x => x.vmi == "***");
+```
+
+---
+
+### ➕ **Extra: Tömb elemeinek egyesítése (Join/Select + String.Join)**
+
+Használható például stringek összeillesztésére:
+
+```csharp
+var osszesNev = string.Join(", ", list.Select(x => x.Nev));
+```
+
+---
+
+### ➕ **Extra: Egyediség kiválasztása (Distinct)**
+
+Kiválasztja az egyedi `vmi` értékeket.
+
+```csharp
+var egyediek = list.Select(x => x.vmi).Distinct().ToList();
+```
+
+---
+
+### ➕ **Extra: Több feltétel kombinálása**
+
+```csharp
+var szurt = list
+    .Where(x => x.vmi != null && x.Eredmeny > 50)
+    .OrderBy(x => x.Eredmeny)
+    .ToList();
+```
+
+---
+
+### Összefoglalás – LINQ előnyei:
+
+* Tömör, olvasható kód.
+* Könnyen kombinálható szűrés, rendezés, csoportosítás.
+* Erőteljes eszköz komplex adatműveletek egyszerű megvalósítására.
+
+---
+

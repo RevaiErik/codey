@@ -1,0 +1,135 @@
+
+## 👤 Példa osztály: `Diak`
+
+```csharp
+public class Diak
+{
+    public string Nev { get; set; }
+    public string Osztaly { get; set; }
+    public List<int> Jegyek { get; set; }
+    public DateTime SzuletesiDatum { get; set; }
+}
+```
+
+És legyen egy lista:
+
+```csharp
+List<Diak> diakok = GetDiakok(); // feltételezzük, hogy ez ad egy listát
+```
+
+---
+
+### 🔢 1. **Tanulók csoportosítása osztály szerint, és osztályonkénti átlagjegy számítása**
+
+```csharp
+var atlagok = diakok
+    .GroupBy(d => d.Osztaly)
+    .ToDictionary(
+        g => g.Key,
+        g => g.Average(d => d.Jegyek.Average())
+    );
+```
+
+---
+
+### 🧠 2. **Az a diák, akinek a legmagasabb az átlaga**
+
+```csharp
+var topDiak = diakok
+    .OrderByDescending(d => d.Jegyek.Average())
+    .First();
+```
+
+---
+
+### 📆 3. **Azok a diákok, akik 2006 előtt születtek és legalább egy egyesük van**
+
+```csharp
+var problemasDiakok = diakok
+    .Where(d => d.SzuletesiDatum.Year < 2006 && d.Jegyek.Contains(1))
+    .ToList();
+```
+
+---
+
+### 🆔 4. **Diáknevek lekérése, ahol minden jegy legalább 4-es**
+
+```csharp
+var joTanulok = diakok
+    .Where(d => d.Jegyek.All(j => j >= 4))
+    .Select(d => d.Nev)
+    .ToList();
+```
+
+---
+
+### 📈 5. **Top 3 diák, akik a legjobban teljesítenek (átlag alapján)**
+
+```csharp
+var top3 = diakok
+    .OrderByDescending(d => d.Jegyek.Average())
+    .Take(3)
+    .ToList();
+```
+
+---
+
+### 🔄 6. **Melyik osztályba jár a legtöbb diák? (Legnépesebb osztály)**
+
+```csharp
+var legnepesebbOsztaly = diakok
+    .GroupBy(d => d.Osztaly)
+    .OrderByDescending(g => g.Count())
+    .First()
+    .Key;
+```
+
+---
+
+### 🏆 7. **Melyik osztály átlagteljesítménye a legjobb?**
+
+```csharp
+var legjobbOsztaly = diakok
+    .GroupBy(d => d.Osztaly)
+    .Select(g => new {
+        Osztaly = g.Key,
+        Atlag = g.Average(d => d.Jegyek.Average())
+    })
+    .OrderByDescending(x => x.Atlag)
+    .First();
+```
+
+---
+
+### 🎯 8. **Minden osztályhoz kilistázni a benne lévő diákokat, rendezve átlageredmény szerint**
+
+```csharp
+var osztalyok = diakok
+    .GroupBy(d => d.Osztaly)
+    .ToDictionary(
+        g => g.Key,
+        g => g.OrderByDescending(d => d.Jegyek.Average()).ToList()
+    );
+```
+
+---
+
+### 🧾 9. **Minden diák neve + átlaga formázva szövegként egy listában**
+
+```csharp
+var statisztika = diakok
+    .Select(d => $"{d.Nev}: {d.Jegyek.Average():0.00}")
+    .ToList();
+```
+
+---
+
+### 🔍 10. **Leggyakoribb jegyek lekérdezése összesítve**
+
+```csharp
+var jegyStatisztika = diakok
+    .SelectMany(d => d.Jegyek)
+    .GroupBy(j => j)
+    .OrderByDescending(g => g.Count())
+    .ToDictionary(g => g.Key, g => g.Count());
+```

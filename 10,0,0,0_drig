@@ -1,0 +1,35 @@
+Ez a sor: <Grid Margin="10,0,0,0">
+
+azt jelenti, hogy a `Grid` vezérlő **külső margót** (angolul: *margin*) kap, ami a következőképp van megadva:
+
+```plaintext
+Margin="bal, felső, jobb, alsó"
+```
+
+### Tehát:
+
+* **bal oldalról 10 pixeles eltolás**
+* **felső, jobb, és alsó oldalról nincs eltolás (0 pixel)**
+
+### Vizualizálva:
+
+```
++-----------------------------------------+
+| (10px hely bal oldalon)                 |
+|   +---------------------------------+   |
+|   |             Grid               |   |
+|   +---------------------------------+   |
++-----------------------------------------+
+```
+
+Ez a `Margin` beállítás tehát **eltolja az egész `Grid`-et 10 pixellel jobbra** az ablak bal szélétől, a többi irányban viszont nincs eltolás. Ha például az egész `Window` 833 pixel széles, akkor a `Grid` kb. 823 pixel széles lesz (10 pixellel "beljebb van" balról).
+
+---
+
+Ha szeretnél **egyenletes margót** minden irányba, akkor ezt írnád:
+
+```xml
+<Grid Margin="10" />
+```
+
+Ez 10 pixeles margót ad **minden oldalra** (bal, felső, jobb, alsó).

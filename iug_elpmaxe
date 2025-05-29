@@ -1,0 +1,187 @@
+
+
+## ✅ Cél: Olyan `AlapAblak<T>` készítése, amit bárhol fel lehet használni, ha van egy `T` típus (mint a `Paralimpia`), amely:
+
+* beolvasható fájlból (pl. tabulátorral elválasztott sorokból),
+* megjeleníthető `DataGrid`-ben,
+* szűrhető szövegesen,
+* és lehet rá javaslatot menteni.
+
+---
+
+## 🏗️ 1. Általános `AlapAblak<T>` (magyar változókkal)
+
+```csharp
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Windows;
+using System.Windows.Controls;
+
+namespace AltalanosGUI
+{
+    public abstract class AlapAblak<T> : Window
+    {
+        protected List<T> elemek = new();
+        protected T kivalasztott;
+
+        protected abstract string ForrasFajl { get; }
+        protected abstract string JavaslatFajl { get; }
+        protected abstract Func<string, T> SorParzolo { get; }
+        protected abstract Func<T, string, bool> SzuroFeltetel { get; }
+        protected abstract string FormatJavaslat(T elem);
+
+        protected DataGrid tabla;
+        protected TextBox szuroMezo;
+        protected Button javaslatGomb;
+
+        public AlapAblak()
+        {
+            Inicializalas();
+            BetoltAdatok();
+        }
+
+        private void BetoltAdatok()
+        {
+            using StreamReader be = new(ForrasFajl, Encoding.UTF8);
+            _ = be.ReadLine(); // fejléc átugrása
+            while (!be.EndOfStream)
+            {
+                elemek.Add(SorParzolo(be.ReadLine()));
+            }
+            tabla.ItemsSource = elemek;
+        }
+
+        protected void Szures(object sender, TextChangedEventArgs e)
+        {
+            string szuro = szuroMezo.Text.ToLower();
+            tabla.ItemsSource = string.IsNullOrWhiteSpace(szuro)
+                ? elemek
+                : elemek.Where(x => SzuroFeltetel(x, szuro)).ToList();
+        }
+
+        protected void Kivalasztas(object sender, SelectionChangedEventArgs e)
+        {
+            kivalasztott = (T)tabla.SelectedItem;
+            KivalasztottValtozott(kivalasztott);
+        }
+
+        protected void Mentes(object sender, RoutedEventArgs e)
+        {
+            if (kivalasztott == null)
+            {
+                MessageBox.Show("Nincs kiválasztva adat!");
+                return;
+            }
+
+            if (MessageBox.Show("Valóban javaslatot tesz?", "Megerősítés", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+            {
+                using StreamWriter sw = new(JavaslatFajl, append: true, Encoding.UTF8);
+                sw.WriteLine($"{DateTime.Now:yyyy. MM. dd. HH:mm.ss.} {FormatJavaslat(kivalasztott)}");
+            }
+        }
+
+        protected abstract void Inicializalas();
+        protected abstract void KivalasztottValtozott(T elem);
+    }
+}
+```
+
+---
+
+## 🧭 2. `ParalimpiaAblak` (MainWindow helyett)
+
+```csharp
+using System;
+using System.Windows.Controls;
+using AltalanosGUI;
+
+namespace ParalimpiaGUI
+{
+    public partial class ParalimpiaAblak : AlapAblak<Paralimpia>
+    {
+        protected override string ForrasFajl => @"..\..\..\src\ermek.txt";
+        protected override string JavaslatFajl => @"..\..\..\src\javaslat.txt";
+        protected override Func<string, Paralimpia> SorParzolo => sor => new Paralimpia(sor);
+        protected override Func<Paralimpia, string, bool> SzuroFeltetel =>
+            (p, szuro) => p.Orszag.ToLower().Contains(szuro) || p.Varos.ToLower().Contains(szuro);
+
+        protected override string FormatJavaslat(Paralimpia p)
+        {
+            return $"Id:{p.Id} Érmek: {aranyTextBox.Text} {ezustTextBox.Text} {bronzTextBox.Text}";
+        }
+
+        public ParalimpiaAblak()
+        {
+            InitializeComponent();
+        }
+
+        protected override void Inicializalas()
+        {
+            tabla = this.FindName("dataGrid") as DataGrid;
+            szuroMezo = this.FindName("szures_txtbox") as TextBox;
+            javaslatGomb = this.FindName("mentesGomb") as Button;
+
+            szuroMezo.TextChanged += Szures;
+            tabla.SelectionChanged += Kivalasztas;
+            javaslatGomb.Click += Mentes;
+        }
+
+        protected override void KivalasztottValtozott(Paralimpia p)
+        {
+            if (p != null)
+            {
+                evLabel.Content = p.Ev;
+                aranyTextBox.Text = p.Arany.ToString();
+                ezustTextBox.Text = p.Ezust.ToString();
+                bronzTextBox.Text = p.Bronz.ToString();
+            }
+            else
+            {
+                evLabel.Content = "####";
+                aranyTextBox.Clear();
+                ezustTextBox.Clear();
+                bronzTextBox.Clear();
+            }
+        }
+    }
+}
+```
+
+---
+
+## 🎨 3. XAML megfeleltetés
+
+Ehhez a logikához az alábbi `x:Name`-ek szükségesek a `MainWindow.xaml`-ban:
+
+```xml
+<DataGrid x:Name="dataGrid" ... />
+<TextBox x:Name="szures_txtbox" ... />
+<Button x:Name="mentesGomb" ... />
+<Label x:Name="evLabel" ... />
+<TextBox x:Name="aranyTextBox" ... />
+<TextBox x:Name="ezustTextBox" ... />
+<TextBox x:Name="bronzTextBox" ... />
+```
+
+---
+
+## 🔁 Használat más osztályhoz
+
+Ha később például van egy `Olimpia` osztályod, csak egy új `OlimpiaAblak` kell:
+
+```csharp
+public class Olimpia
+{
+    // tulajdonságok és konstruktor
+}
+
+public class OlimpiaAblak : AlapAblak<Olimpia>
+{
+    // implementációk az abstract tagokra
+}
+```
+
+

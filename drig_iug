@@ -1,0 +1,57 @@
+A WPF-ben a `Grid` egy nagyon gyakran használt konténer, amely rácsalapú (sorok és oszlopok) elrendezést tesz lehetővé. A `Grid` XAML-ben így néz ki:
+
+### 1. Alap `Grid` létrehozása
+
+```xml
+<Grid>
+    <!-- Ide jöhetnek az elemek -->
+</Grid>
+```
+
+### 2. Sorok és oszlopok definiálása
+
+```xml
+<Grid>
+    <!-- Oszlopok -->
+    <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="*" />     <!-- Rugalmas szélesség -->
+        <ColumnDefinition Width="200" />   <!-- Fix szélesség -->
+    </Grid.ColumnDefinitions>
+
+    <!-- Sorok -->
+    <Grid.RowDefinitions>
+        <RowDefinition Height="Auto" />    <!-- Méret a tartalomhoz -->
+        <RowDefinition Height="*" />       <!-- Rugalmas magasság -->
+    </Grid.RowDefinitions>
+</Grid>
+```
+
+### 3. Elemet elhelyezni a `Grid`-ben
+
+Az elemeket a `Grid.Row` és `Grid.Column` tulajdonságokkal tudod pozicionálni:
+
+```xml
+<Grid>
+    <Grid.RowDefinitions>
+        <RowDefinition Height="Auto"/>
+        <RowDefinition Height="*"/>
+    </Grid.RowDefinitions>
+    <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="*"/>
+        <ColumnDefinition Width="2*"/>
+    </Grid.ColumnDefinitions>
+
+    <TextBlock Text="Név:" Grid.Row="0" Grid.Column="0" Margin="5"/>
+    <TextBox Grid.Row="0" Grid.Column="1" Margin="5"/>
+
+    <TextBlock Text="Leírás:" Grid.Row="1" Grid.Column="0" Margin="5"/>
+    <TextBox Grid.Row="1" Grid.Column="1" Margin="5"/>
+</Grid>
+```
+
+### További hasznos infók:
+
+* A `Grid.RowSpan` és `Grid.ColumnSpan` tulajdonságokkal egy elem több sort vagy oszlopot is elfoglalhat.
+* A `Width="*"` vagy `Height="*"` azt jelenti, hogy a rendelkezésre álló helyet arányosan osztja el.
+* A `Width="Auto"` azt jelenti, hogy az oszlop szélessége a tartalomhoz igazodik.
+
